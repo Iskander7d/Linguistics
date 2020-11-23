@@ -4,13 +4,13 @@ using System.Text;
 
 namespace Linguistics
 {
-    class Language
+    class Language : Displayed
     {
         public string Name { get; set; }
 
         public int Level { get; set; }
 
-        public virtual void Display()
+        public override void Display()
         {
             Console.WriteLine("Language info\n");
             Console.WriteLine("Language: {0}\nLevel: {1}\n", Name, Level);

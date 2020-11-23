@@ -4,36 +4,37 @@ using System.Text;
 
 namespace Linguistics
 {
-    class Word
+    class Word: Displayed
     {
         static LanguageCollection languages = new LanguageCollection();
         public string Name { get; set; }
 
-        static public Dictionary<Language, bool> knownTranslation = new Dictionary<Language, bool>();
+        private Dictionary<Language, bool> knownTranslation = new Dictionary<Language, bool>();
 
-        public void initTranslation(Language nativeLang)
+        public void AddTranslation(Language targetLang)
         {
-            var ie = languages.GetEnumerator();
-            while (ie.MoveNext())
+            knownTranslation[targetLang] = true;
+        }
+
+        public void SetDefault()
+        {
+            foreach (Language lang in languages)
             {
-                Language lang = (Language)ie.Current;
-                if (lang == nativeLang)
-                    knownTranslation[(Language)ie.Current] = true;
+                knownTranslation[lang] = false;
             }
-            ie.Reset();
         }
 
-        public void setDefaultTranslation()
+        public override void Display()
         {
-        }
-        public Dictionary<Language, bool> getInfo()
-        {
-            return knownTranslation;
+            Console.WriteLine(this.Name);
+            foreach (var kv in knownTranslation)
+            {
+                Console.WriteLine("{0} : {1}", kv.Key.Name, kv.Value);
+            }
+            Console.WriteLine();
+
         }
 
-        public void addTranslation(Language lang)
-        {
-            knownTranslation[lang] = true;
-        }
+
     }
 }

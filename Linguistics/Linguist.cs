@@ -37,17 +37,27 @@ namespace Linguistics
     {
         private string name;
         private int level;
-        private string native_language;
+        private Language native_language;
 
-        private List<Word> learnedWords = new List<Word>();
+        private WordsCollection words = new WordsCollection();
         private List<Language> learnedLangs = new List<Language>();
 
         public Linguist(Language lang, string newName)
         {
             name = newName;
             level = lang.Level;
-            native_language = lang.Name;
+            native_language = lang;
             learnedLangs.Add(lang);
+        }
+
+        public Language GetNativeLanguage()
+        {
+            return native_language;
+        }
+
+        public void InitNativeWords()
+        {
+
         }
 
         public void Display()
@@ -59,6 +69,12 @@ namespace Linguistics
             {
                 lang.Display();
             }
+
+        }
+
+        public void GetInfo<T>(T obj) where T : Displayed
+        {
+            obj.Display();
         }
 
     }

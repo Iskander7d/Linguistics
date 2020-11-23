@@ -10,6 +10,20 @@ namespace Linguistics
         static WordsCollection words = new WordsCollection();
         static void Main(string[] args)
         {
+            var name = "John";
+            var langObj = getNativeLang("English");
+            Linguist linguist = new Linguist(langObj, name);
+            linguist.GetInfo<Language>(langObj);
+
+            var ie = words.GetEnumerator();
+            while (ie.MoveNext())
+            {
+                Word word = (Word)ie.Current;
+                word.SetDefault();
+                linguist.GetInfo<Word>(word);
+            }
+            
+            /*
             Console.Write("Type lingust's name: ");
             var name = Console.ReadLine();
 
@@ -32,6 +46,7 @@ namespace Linguistics
                     break;
                 }
             }
+            */
         }
 
         static public Language getNativeLang(string nativeLang)
