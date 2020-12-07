@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Linguistics
 {
@@ -8,18 +9,18 @@ namespace Linguistics
     {
         Language[] _languages =
         {
-            new Amorphous       { Name = "Chinese", Level = 1},
-            new Amorphous       { Name = "Vietnamese", Level = 1},
-            new Amorphous       { Name = "Thai", Level = 1},
-            new Agglutinative   { Name = "Turkish", Level = 2},
-            new Agglutinative   { Name = "Kazakh", Level = 2},
-            new Agglutinative   { Name = "Japanese", Level = 2},
-            new Fusional        { Name = "Russian", Level = 3},
-            new Fusional        { Name = "English", Level = 3},
-            new Fusional        { Name = "German", Level = 3},
-            new Alternating     { Name = "Arabic", Level = 3},
-            new Alternating     { Name = "Hebrew", Level = 3},
-            new Alternating     { Name = "Amharic", Level = 3},
+            new Amorphous       { Name = "Chinese", Level = 1, IsLearned = false, LearnProgress = 0},
+            new Amorphous       { Name = "Vietnamese", Level = 1, IsLearned = false, LearnProgress = 0},
+            new Amorphous       { Name = "Thai", Level = 1, IsLearned = false, LearnProgress = 0},
+            new Agglutinative   { Name = "Turkish", Level = 2, IsLearned = false, LearnProgress = 0},
+            new Agglutinative   { Name = "Kazakh", Level = 2, IsLearned = false, LearnProgress = 0},
+            new Agglutinative   { Name = "Japanese", Level = 2, IsLearned = false, LearnProgress = 0},
+            new Fusional        { Name = "Russian", Level = 3, IsLearned = false, LearnProgress = 0},
+            new Fusional        { Name = "English", Level = 3, IsLearned = false, LearnProgress = 0},
+            new Fusional        { Name = "German", Level = 3, IsLearned = false, LearnProgress = 0},
+            new Alternating     { Name = "Arabic", Level = 4, IsLearned = false, LearnProgress = 0},
+            new Alternating     { Name = "Hebrew", Level = 4, IsLearned = false, LearnProgress = 0},
+            new Alternating     { Name = "Amharic", Level = 4, IsLearned = false, LearnProgress = 0},
         };
 
         public System.Collections.IEnumerator GetEnumerator()

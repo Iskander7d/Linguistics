@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 /*
 Лингвист может читать и переводить слова.
 Лингвист имеет начальный уровень (каждая языковая группа - это уровень).
@@ -37,44 +38,180 @@ namespace Linguistics
     {
         private string name;
         private int level;
-        private Language native_language;
+        private Language nativeLanguage;
+        private string nativeLanguageName;
 
         private WordsCollection words = new WordsCollection();
-        private List<Language> learnedLangs = new List<Language>();
+        private LanguageCollection languages = new LanguageCollection();
+
+        public delegate void LinguistHandler(string message);
+        public event LinguistHandler Notify;
 
         public Linguist(Language lang, string newName)
         {
+            SetDefault();
             name = newName;
             level = lang.Level;
-            native_language = lang;
-            learnedLangs.Add(lang);
+            SetNativeLanguage(lang);
+        }
+
+        public void SetDefault()
+        {
+            foreach (Word w in words)
+            {
+                w.SetDefault();
+            }
         }
 
         public Language GetNativeLanguage()
         {
-            return native_language;
+            return nativeLanguage;
         }
 
-        public void InitNativeWords()
+        private void SetNativeLanguage(Language lang)
         {
+            nativeLanguage = lang;
+            nativeLanguageName = lang.Name;
 
+            foreach (Language l in languages)
+            {
+                if (l.Name == lang.Name)
+                {
+                    l.IsLearned = true;
+                }
+            }
+
+            foreach (Word w in words)
+            {
+                w.knownTranslation[lang] = true;
+            }
         }
 
         public void Display()
         {
             Console.WriteLine("Name: {0} \nNative language: {1} \nSkills Level: {2}\n",
-                name, native_language, level);
+                name, nativeLanguageName, level);
 
-            foreach (var lang in learnedLangs)
+            foreach (Language lang in languages)
             {
-                lang.Display();
+                GetInfo<Language>(lang);
             }
 
+            foreach (Word w in words)
+            {
+                Console.WriteLine("{0}:", w.Name);
+                foreach (var kt in w.knownTranslation)
+                {
+                    Console.WriteLine("     {0} - {1}", kt.Key.Name, kt.Value);
+                }
+            }
+        }
+
+        public void DisplayKnownWords()
+        {
+            foreach (Word w in words)
+            {
+                Console.WriteLine("{0}:", w.Name);
+                foreach (var kt in w.knownTranslation)
+                {
+                    if (kt.Value)
+                    {
+                        Console.WriteLine("     {0} - {1}", kt.Key.Name, kt.Value);
+                    }
+                }
+            }
         }
 
         public void GetInfo<T>(T obj) where T : Displayed
         {
             obj.Display();
+        }
+
+        private Language GetLanguage(string langStr)
+        {
+            foreach (Language lang in languages)
+            {
+                if (lang.Name == langStr)
+                {
+                    return lang;
+                }
+            }
+
+            return null;
+        }
+
+        public void learnWord(string baseLangStr, string otherLangStr, string wordToLearn)
+        {
+            Language baseLang = GetLanguage(baseLangStr);
+            Language otherLang = GetLanguage(otherLangStr);
+            if (baseLang.IsLearned)
+            {
+                if (this.level >= otherLang.Level)
+                {
+                    foreach (Word w in words)
+                    {
+                        if (w.Name == wordToLearn)
+                        {
+                            w.knownTranslation[otherLang] = true;
+                            Console.WriteLine("{0} has been known on {1}", w.Name, otherLangStr);
+                            otherLang.LearnProgress++;
+
+                            string notify = String.Format("word '{0}' on {1} learned by {2}", w.Name, otherLangStr, this.name);
+                            Notify?.Invoke(notify);
+                        }
+                    }
+                    CheckLanguageLearn(otherLang);
+                }
+                else
+                {
+                    Console.WriteLine("not enough skill");
+
+                    string notify = String.Format("Failed attempt: word {0} was not learned", wordToLearn);
+                    Notify?.Invoke(notify);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Base language is not learned");
+
+                string notify = String.Format("Failed attempt: in learn word '{0}' from {1} to {2}", wordToLearn, baseLangStr, otherLangStr);
+                Notify?.Invoke(notify);
+            }
+        }
+
+        private void CheckLanguageLearn(Language lang)
+        {
+            if (lang.LearnProgress == 5)
+            {
+                lang.IsLearned = true;
+                Console.WriteLine("{0} has just been known!", lang.Name);
+
+                string notify = String.Format("Language {0} learned by {1}", lang.Name, this.name);
+                Notify?.Invoke(notify);
+            }
+
+            CheckLvlUp();
+        }
+
+        private void CheckLvlUp()
+        {
+            int lvlProgress = 0;
+            foreach (Language lang in languages)
+            {
+                if (lang.Level == this.level && lang.IsLearned)
+                {
+                    lvlProgress++;
+                }
+            }
+            
+            if (lvlProgress == 3)
+            {
+                level++;
+                Console.WriteLine("LVLUP! level is {0}", this.level);
+
+                string notify = String.Format("{0}'s level is up: {1}", this.name, this.level);
+                Notify?.Invoke(notify);
+            }
         }
 
     }

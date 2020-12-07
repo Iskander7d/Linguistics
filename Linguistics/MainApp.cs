@@ -1,64 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Linguistics
 {
     class MainApp
     {
-        static LanguageCollection languages = new LanguageCollection();
-        static WordsCollection words = new WordsCollection();
         static void Main(string[] args)
         {
-            var name = "John";
-            var langObj = getNativeLang("English");
-            Linguist linguist = new Linguist(langObj, name);
-            linguist.GetInfo<Language>(langObj);
-
-            var ie = words.GetEnumerator();
-            while (ie.MoveNext())
+            try
             {
-                Word word = (Word)ie.Current;
-                word.SetDefault();
-                linguist.GetInfo<Word>(word);
-            }
-            
-            /*
-            Console.Write("Type lingust's name: ");
-            var name = Console.ReadLine();
+                Console.Write("Enter your name: ");
+                var name = Console.ReadLine();
+                if (name == "")
+                {
+                    throw new LinguisticsException("name");
+                }
 
-            Language nativeLangObj;
-            while (true)
-            {
-                Console.Write("Choose native language: ");
-                var nativeLanguage = Console.ReadLine();
-                var langObj = getNativeLang(nativeLanguage);
+                Console.Write("Enter your native language: ");
+                var langObj = Utils.getLanguage(Console.ReadLine());
                 if (langObj == null)
                 {
-                    Console.WriteLine("Incorrect language, try again.\n");
-                    continue;
+                    LanguageCollection langs = new LanguageCollection();
+                    throw new LinguisticsException("null lang object", langs);
                 }
-                else
-                {
-                    nativeLangObj = langObj;
-                    Linguist linguist = new Linguist(langObj, name);
-                    linguist.Display();
-                    break;
-                }
-            }
-            */
-        }
 
-        static public Language getNativeLang(string nativeLang)
-        {
-            foreach (Language lang in languages)
+                Linguist linguist = new Linguist(langObj, name);
+
+                Logger logger = new Logger();
+                linguist.Notify += logger.LoggingNotify;
+
+                linguist.learnWord("Chinese", "English", "Home");
+                linguist.learnWord("Vietnamese", "Chinese", "Home");
+                linguist.learnWord("Vietnamese", "Chinese", "World");
+                linguist.learnWord("Vietnamese", "Chinese", "Life");
+                linguist.learnWord("Vietnamese", "Chinese", "Family");
+                linguist.learnWord("Vietnamese", "Chinese", "Love");
+                linguist.learnWord("Vietnamese", "Thai", "Home");
+                linguist.learnWord("Vietnamese", "Thai", "World");
+                linguist.learnWord("Vietnamese", "Thai", "Life");
+                linguist.learnWord("Vietnamese", "Thai", "Family");
+                linguist.learnWord("Vietnamese", "Thai", "Love");
+            }
+            catch(LinguisticsException le)
             {
-                
-                if (lang.Name == nativeLang)
-                    return lang;
+                Console.WriteLine(le.Message);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
 
-            return null;
+
         }
     }
 }
